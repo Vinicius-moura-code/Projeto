@@ -29,17 +29,17 @@ const Login: React.FC = () => {
   const handleInputChange =
     (prop: keyof User) => (event: ChangeEvent<HTMLInputElement>) => {
       setInfoLogin({ ...infoLogin, [prop]: event.target.value });
-
-      if (!emailRegex.test(infoLogin.email)) {
-        console.log('n sei');
-        setErrorLogin({ ...errorLogin, emailError: 'Email invalido!' });
-      } else {
-        setErrorLogin({ ...errorLogin, emailError: '' });
-      }
+      var erros = errorLogin;
 
       if (infoLogin.senha.length < 4 || infoLogin.senha.length > 15) {
-        setErrorLogin({ ...errorLogin, senhaError: 'Senha invalida!' });
-      } else setErrorLogin({ ...errorLogin, senhaError: '' });
+        erros = { ...erros, senhaError: 'Senha invalida!' };
+      } else erros = { ...erros, senhaError: '' };
+
+      if (!emailRegex.test(infoLogin.email)) {
+        erros = { ...erros, emailError: 'Email invalido!' };
+      } else erros = { ...erros, emailError: '' };
+
+      setErrorLogin(erros);
     };
 
   async function handleLogin(event: any) {
@@ -52,12 +52,12 @@ const Login: React.FC = () => {
         password: '123456',
       });
       return toast.success('Sucesso', {
-        position: toast.POSITION.BOTTOM_RIGHT,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
     } catch (error) {
       return toast.error('Ocorreu um erro', {
-        position: toast.POSITION.BOTTOM_RIGHT,
+        position: toast.POSITION.TOP_RIGHT,
         autoClose: 3000,
       });
     } finally {
@@ -82,9 +82,10 @@ const Login: React.FC = () => {
         <Typography component='h1' variant='h5'>
           Tela de Login
         </Typography>
-        <Box component='form' onSubmit={handleLogin} noValidate sx={{ mt: 1 }}>
+        <Box component='form' onSubmit={handleLogin}  sx={{ mt: 1 }}>
           <TextField
             margin='normal'
+            autoComplete="off"
             required
             fullWidth
             id='email'
@@ -93,7 +94,9 @@ const Login: React.FC = () => {
             autoFocus
             value={infoLogin.email}
             onChange={handleInputChange('email')}
-            error={errorLogin.emailError !== ''}
+            error={
+              errorLogin.emailError !== '' || errorLogin.emailError.length > 0
+            }
             helperText={errorLogin.emailError}
           />
           <TextField
@@ -106,7 +109,9 @@ const Login: React.FC = () => {
             id='password'
             value={infoLogin.senha}
             onChange={handleInputChange('senha')}
-            error={errorLogin.senhaError !== ''}
+            error={
+              errorLogin.senhaError !== '' || errorLogin.senhaError.length > 0
+            }
             helperText={errorLogin.senhaError}
           />
           <FormControlLabel
