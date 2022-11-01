@@ -10,6 +10,7 @@ import {
   Checkbox,
 } from '@mui/material';
 import FaceOutlinedIcon from '@mui/icons-material/FaceOutlined';
+import LoginIcon from '@mui/icons-material/Login';
 import useAuth from '../../contexts/auth';
 import { User } from './userType';
 import { toast } from 'react-toastify';
@@ -28,16 +29,23 @@ const Login: React.FC = () => {
   const handleInputChange =
     (prop: keyof User) => (event: ChangeEvent<HTMLInputElement>) => {
       setInfoLogin({ ...infoLogin, [prop]: event.target.value });
-      !emailRegex.test(infoLogin.email)
-        ? setErrorLogin({ ...errorLogin, emailError: 'Email invalido!' })
-        : setErrorLogin({ ...errorLogin, emailError: '' });
+
+      if (!emailRegex.test(infoLogin.email)) {
+        console.log('n sei');
+        setErrorLogin({ ...errorLogin, emailError: 'Email invalido!' });
+      } else {
+        setErrorLogin({ ...errorLogin, emailError: '' });
+      }
+
+      if (infoLogin.senha.length < 4 || infoLogin.senha.length > 15) {
+        setErrorLogin({ ...errorLogin, senhaError: 'Senha invalida!' });
+      } else setErrorLogin({ ...errorLogin, senhaError: '' });
     };
 
   async function handleLogin(event: any) {
     setLoading(true);
     event.preventDefault();
-    console.log(infoLogin);
-    console.log();
+
     try {
       await Login({
         email: 'user@',
@@ -115,11 +123,13 @@ const Login: React.FC = () => {
             fullWidth
             variant='contained'
             color='primary'
+            endIcon={<LoginIcon />}
             loadingPosition='end'
             disabled={
               infoLogin.senha === '' ||
               infoLogin.senha === '' ||
-              errorLogin.emailError !== ''
+              errorLogin.emailError !== '' ||
+              errorLogin.senhaError !== ''
             }
           >
             Login

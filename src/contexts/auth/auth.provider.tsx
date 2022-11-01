@@ -29,7 +29,7 @@ const AuthProvider = ({ children }: any) => {
     setUser(null);
 
     sessionStorage.removeItem('@App:user');
-    sessionStorage.removeItem('App:token');
+    sessionStorage.removeItem('@App:token');
   }
 
   return (

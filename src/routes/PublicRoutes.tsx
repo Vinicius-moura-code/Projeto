@@ -2,7 +2,7 @@ import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { Routes } from 'react-router-dom';
 
-import Home from '../screens/Home';
+import Home from '../screens/home';
 
 const PublicRoutes = () => {
   return (
