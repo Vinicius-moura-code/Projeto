@@ -12,13 +12,14 @@ import {
 import FaceOutlinedIcon from '@mui/icons-material/FaceOutlined';
 import LoginIcon from '@mui/icons-material/Login';
 import useAuth from '../../contexts/auth';
-import { User } from './userType';
+import { User } from './types';
 import { toast } from 'react-toastify';
-var emailRegex =
-  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+import { validadorEmail, validadorSenha } from '../../utils/validadores';
+import useToast from '../../hooks/useToast';
 
 const Login: React.FC = () => {
   const { Login } = useAuth();
+  const { success, error } = useToast();
   const [loading, setLoading] = useState<boolean>(false);
   const [infoLogin, setInfoLogin] = useState<User>({ email: '', senha: '' });
   const [errorLogin, setErrorLogin] = useState({
@@ -31,13 +32,8 @@ const Login: React.FC = () => {
       setInfoLogin({ ...infoLogin, [prop]: event.target.value });
       var erros = errorLogin;
 
-      if (infoLogin.senha.length < 4 || infoLogin.senha.length > 15) {
-        erros = { ...erros, senhaError: 'Senha invalida!' };
-      } else erros = { ...erros, senhaError: '' };
-
-      if (!emailRegex.test(infoLogin.email)) {
-        erros = { ...erros, emailError: 'Email invalido!' };
-      } else erros = { ...erros, emailError: '' };
+      erros.senhaError = validadorSenha(infoLogin.senha);
+      erros.emailError = validadorEmail(infoLogin.email);
 
       setErrorLogin(erros);
     };
@@ -51,15 +47,9 @@ const Login: React.FC = () => {
         email: 'user@',
         password: '123456',
       });
-      return toast.success('Sucesso', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
-    } catch (error) {
-      return toast.error('Ocorreu um erro', {
-        position: toast.POSITION.TOP_RIGHT,
-        autoClose: 3000,
-      });
+      return success();
+    } catch (err) {
+      return error();
     } finally {
       setLoading(false);
     }
@@ -82,10 +72,10 @@ const Login: React.FC = () => {
         <Typography component='h1' variant='h5'>
           Tela de Login
         </Typography>
-        <Box component='form' onSubmit={handleLogin}  sx={{ mt: 1 }}>
+        <Box component='form' onSubmit={handleLogin} sx={{ mt: 1 }}>
           <TextField
             margin='normal'
-            autoComplete="off"
+            autoComplete='off'
             required
             fullWidth
             id='email'
@@ -146,5 +136,3 @@ const Login: React.FC = () => {
 };
 
 export default Login;
-
-//<button onClick={handleLogin}>Login</button>

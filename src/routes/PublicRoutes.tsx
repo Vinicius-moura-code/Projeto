@@ -1,14 +1,13 @@
-import React from 'react';
 import { BrowserRouter, Route } from 'react-router-dom';
 import { Routes } from 'react-router-dom';
 
-import Home from '../screens/home';
+import Login from '../screens/login';
 
 const PublicRoutes = () => {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route path='/' element={<Login />} />
       </Routes>
     </BrowserRouter>
   );
