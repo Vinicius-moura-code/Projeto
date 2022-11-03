@@ -1,31 +1,49 @@
 import { useState, useEffect } from 'react';
+import useFetch from '../../hooks/useFetch';
+import useToast from '../../hooks/useToast';
 import { defaults, post } from '../../services/api';
 import AuthContext from './auth.context';
+import loginApi from './auth.service';
 
 const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<object | null>(null);
+  const { logout, login, warning } = useToast();
 
   useEffect(() => {
     const storagedUser = sessionStorage.getItem('@App:user');
     const storagedToken = sessionStorage.getItem('@App:token');
 
-    if (storagedToken && storagedUser) {
+    if (
+      storagedToken &&
+      storagedToken !== undefined &&
+      storagedUser &&
+      storagedUser !== undefined
+    ) {
       setUser(JSON.parse(storagedUser));
       defaults.headers.Authorization = `Bearer ${storagedToken}`;
     }
   }, []);
 
   async function Login(userData: object) {
-    const response = await post('https://localhost:3000', userData);
+    try {
+      const response = await loginApi({ ...userData, id: 0, role: '' });
+      if (!(response.message === 'Usuário ou senha inválidos')) {
+        await login();
+        setUser(response.user);
+        defaults.headers.Authorization = `Bearer ${response.token}`;
 
-    setUser(response.data.user);
-    defaults.headers.Authorization = `Bearer ${response.data.token}`;
-
-    sessionStorage.setItem('@App:user', JSON.stringify(response.data.user));
-    sessionStorage.setItem('@App:token', response.data.token);
+        sessionStorage.setItem('@App:user', JSON.stringify(response.user));
+        sessionStorage.setItem('@App:token', response.token);
+      } else {
+        warning('Usuário ou senha inválidos');
+      }
+    } catch (err) {
+      await Logout();
+    }
   }
 
-  function Logout() {
+  async function Logout() {
+    await logout();
     setUser(null);
 
     sessionStorage.removeItem('@App:user');

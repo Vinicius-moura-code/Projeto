@@ -44,10 +44,9 @@ const Login: React.FC = () => {
 
     try {
       await Login({
-        email: 'user@',
-        password: '123456',
+        username: infoLogin.email,
+        password: infoLogin.senha,
       });
-      return success();
     } catch (err) {
       return error();
     } finally {

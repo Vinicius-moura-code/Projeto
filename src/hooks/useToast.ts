@@ -18,8 +18,29 @@ const useToast = () => {
       position: toast.POSITION.TOP_RIGHT,
       autoClose: 3000,
     });
+  const logout = async () => {
+    const resolveAfter3Sec = new Promise((resolve) =>
+      setTimeout(resolve, 3000)
+    );
+    await toast.promise(resolveAfter3Sec, {
+      pending: 'Saindo',
+      success: 'Desconectado',
+      error: 'rejected 🤯',
+    });
+  };
 
-  return { success, error, warning } as const;
+  const login = async () => {
+    const resolveAfter3Sec = new Promise((resolve) =>
+      setTimeout(resolve, 2000)
+    );
+    await toast.promise(resolveAfter3Sec, {
+      pending: 'Entrando',
+      success: 'Conectado',
+      error: 'rejected 🤯',
+    });
+  };
+
+  return { success, error, warning, logout, login } as const;
 };
 
 export default useToast;
